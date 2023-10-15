@@ -2,6 +2,7 @@ export interface AnsweredDataType {
     index: number;
     answered: string;
     correct: string;
+    question: string
 }
 
 export type ArrayRawDataResponseType = {

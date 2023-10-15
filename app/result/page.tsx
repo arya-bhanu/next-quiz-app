@@ -16,13 +16,14 @@ function Result() {
 		}
 		const stateDone = JSON.parse(stateDoneLocal);
 		setStateDone(stateDone.state as ResultSetType);
+		window.localStorage.clear();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return stateDone ? (
 		<div
 			id="result-card"
-			className="max-w-lg mx-auto w-full bg-white rounded-md shadow-md py-7 px-5"
+			className="max-w-lg m-auto w-full bg-white rounded-md shadow-md py-7 px-5"
 		>
 			<h4 className="text-center font-semibold text-2xl">Your Result Score</h4>
 			<div className="mt-4 flex flex-col gap-y-2 ">
@@ -38,13 +39,15 @@ function Result() {
 			</div>
 			<Link
 				href={"/scoreboard"}
-				className="mx-auto block bg-blue-900 text-white py-1.5 px-2 rounded-md mt-3 hover:bg-blue-950"
+				className="mx-auto block w-fit bg-blue-900 text-white py-1.5 px-2 rounded-md mt-3 hover:bg-blue-950"
 			>
 				Your Scoreboard
 			</Link>
 		</div>
 	) : (
-		<p className="text-center text-lg">Checking result data...</p>
+		<p className="text-center text-lg md:text-xl lg:text-2xl m-auto font-semibold">
+			Checking result data ...
+		</p>
 	);
 }
 

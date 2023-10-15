@@ -6,10 +6,10 @@ import Link from "next/link";
 import studyImg from "../../public/img/study.png";
 function Home() {
 	return (
-		<div className="flex items-center justify-between relative min-h-screen overflow-y-clip gap-x-5">
+		<div className="flex min-h-[91vh] sm:min-h-[90vh] items-center justify-between relative overflow-y-clip gap-x-5">
 			<motion.div
-				initial={{ x: -70, opacity: 0, y: 70 }}
-				animate={{ x: 0, opacity: 1, y: 0 }}
+				initial={{ x: -70, opacity: 0, y: 90 }}
+				animate={{ x: -10, opacity: 1, y: 30 }}
 				transition={{ delay: 0.6, ease: "easeInOut", duration: 0.6 }}
 				className={`${styles.radial_backdrop} hidden xl:block absolute -left-48 -bottom-14 w-80 h-80 rounded-full`}
 			></motion.div>
@@ -51,6 +51,7 @@ function Home() {
 				className="rounded-full overflow-clip hidden md:block"
 			>
 				<Image
+					priority={true}
 					src={studyImg}
 					alt="study image"
 				/>

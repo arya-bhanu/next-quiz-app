@@ -12,15 +12,10 @@ function FormQuestions() {
 	useEffect(() => {
 		axiosServerAuthConfig.get("/user/auth").catch((err) => {
 			console.error(err);
-			router.push("/login");
+			router.push("/auth/login");
 		});
 	}, [router]);
 	const { resData, isLoading } = useFetch("/api_category.php");
-	useEffect(() => {
-		window.localStorage.removeItem("TIME");
-		window.localStorage.removeItem("ARRAY_QUESTIONS");
-		window.localStorage.removeItem("ANSWERED_QUESTIONS");
-	}, []);
 
 	function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault();
@@ -30,10 +25,13 @@ function FormQuestions() {
 		const category = formData.get("category") as unknown;
 		const difficulty = formData.get("difficulty") as unknown;
 		const type = formData.get("type") as unknown;
+		window.localStorage.clear();
+		window.sessionStorage.clear();
+
 		setTimeout(() => {
 			router.push("/quiz");
 		}, 100);
-		window.localStorage.clear();
+
 		window.localStorage.setItem(
 			"STATE",
 			JSON.stringify({
@@ -49,7 +47,7 @@ function FormQuestions() {
 	return (
 		<form
 			onSubmit={handleSubmit}
-			className="bg-white mx-auto rounded-lg px-5 py-7 max-w-lg w-full flex flex-col gap-y-2"
+			className="bg-white  m-auto rounded-lg px-5 py-7 max-w-lg w-full flex flex-col gap-y-2"
 		>
 			<div className="form-input-wrapper">
 				<label htmlFor="time">Quiz Time (Minute)</label>

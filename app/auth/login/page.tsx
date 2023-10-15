@@ -32,7 +32,7 @@ function Login() {
 			animate={{ y: 0, opacity: 1 }}
 			transition={{ delay: 0.1, duration: 0.3, ease: "easeInOut" }}
 			onSubmit={handleSubmit}
-			className="bg-white shadow-lg rounded-lg px-5 py-7 max-w-lg w-full flex flex-col gap-y-2 mx-auto"
+			className="bg-white shadow-lg m-auto rounded-lg px-5 py-7 max-w-lg w-full flex flex-col gap-y-2 mx-auto"
 		>
 			<h4 className="font-semibold text-2xl text-center">LOGIN</h4>
 			<div className="form-input-wrapper">

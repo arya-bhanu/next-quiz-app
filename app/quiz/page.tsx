@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Question from "@/components/Question/Question";
 import {
 	AnsweredDataType,
@@ -11,38 +11,43 @@ import { axiosConfig } from "../../config/axios.config";
 import { SubmitedStateType } from "../questions-form/form-questions.type";
 import { ResultSetType } from "@/components/Question/Question";
 import { axiosServerAuthConfig } from "../../config/axios.config";
+import { ResumeQuizContext } from "@/provider/ResumeQuizProvider";
 function Quiz() {
 	// prepare data from localStorage API
 	const router = useRouter();
-	const timeLocal = window.localStorage.getItem("TIME");
-	const data = window.localStorage.getItem("ARRAY_QUESTIONS");
-	const answered = window.localStorage.getItem("ANSWERED_QUESTIONS");
-	const state = window.localStorage.getItem("STATE");
-	if (!state) return (window.location.href = "/questions-form");
-	const stateParsed = JSON.parse(state as string) as SubmitedStateType;
 
 	// react hooks
 	// eslint-disable-next-line react-hooks/rules-of-hooks
-	const [time, setTime] = useState<number>(Number(timeLocal));
+	const [time, setTime] = useState<number | null>(null);
+	const [dataState, setDataState] = useState<SubmitedStateType | null>(null);
 	// eslint-disable-next-line react-hooks/rules-of-hooks
 	const [isQuizDone, setIsQuizDone] = useState(false);
 	// eslint-disable-next-line react-hooks/rules-of-hooks
-	const [resData, setResdata] = useState<CleanedQuestionType[] | null>(
-		data ? (JSON.parse(data) as CleanedQuestionType[]) : null
-	);
+	const [resData, setResdata] = useState<CleanedQuestionType[] | null>(null);
 	// eslint-disable-next-line react-hooks/rules-of-hooks
-	const [answerData, setAnswerdata] = useState<null | AnsweredDataType[]>(
-		answered ? (JSON.parse(answered) as AnsweredDataType[]) : null
-	);
+	const [answerData, setAnswerdata] = useState<null | AnsweredDataType[]>(null);
 	// eslint-disable-next-line react-hooks/rules-of-hooks
-	const [indexQuestions, setIndexQuestions] = useState(
-		setIndexQuestionPosition(answered)
-	);
+	const [indexQuestions, setIndexQuestions] = useState<number>(0);
+	const { saveIsResumable } = useContext(ResumeQuizContext);
 
 	// prepare data question into application state
 	// eslint-disable-next-line react-hooks/rules-of-hooks
 	useEffect(() => {
-		if (!stateParsed) router.push("/questions-form");
+		const data = window.localStorage.getItem("ARRAY_QUESTIONS");
+		const state = window.localStorage.getItem("STATE");
+		const answered = window.localStorage.getItem("ANSWERED_QUESTIONS");
+		const timeLocal = window.localStorage.getItem("TIME");
+		if (!state) return router.push("/questions-form");
+		const stateParsed = JSON.parse(state) as SubmitedStateType;
+		if (answered) {
+			setAnswerdata(JSON.parse(answered) as AnsweredDataType[]);
+			setIndexQuestions(setIndexQuestionPosition(answered));
+		}
+		if (timeLocal) setTime(Number(JSON.parse(timeLocal)));
+		if (data) setResdata(JSON.parse(data) as CleanedQuestionType[]);
+
+		setDataState(stateParsed);
+
 		if (!data) {
 			axiosConfig
 				.get(
@@ -63,13 +68,14 @@ function Quiz() {
 					router.push("/questions-form");
 				});
 		}
+
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [data, stateParsed]);
+	}, []);
 
 	// watch quiz and insert answered questions into localStorage API
 	// eslint-disable-next-line react-hooks/rules-of-hooks
 	useEffect(() => {
-		if (stateParsed.number_questions == answerData?.length) {
+		if (dataState?.number_questions == answerData?.length) {
 			insertScoreIntoDB();
 		}
 		if (answerData) {
@@ -85,7 +91,7 @@ function Quiz() {
 	// eslint-disable-next-line react-hooks/rules-of-hooks
 	useEffect(() => {
 		let stiId: NodeJS.Timeout;
-		if (resData) {
+		if (resData && dataState && time) {
 			if (time > 0) {
 				stiId = setInterval(() => {
 					const timeString = window.localStorage.getItem("TIME");
@@ -94,14 +100,26 @@ function Quiz() {
 						--seconds;
 						window.localStorage.setItem("TIME", JSON.stringify(seconds));
 						if (seconds === 0) {
-							if (!answered || !answerData) {
-								PostAnswer(0, stateParsed.number_questions, 0, undefined);
+							if (!answerData) {
+								PostAnswer(
+									0,
+									dataState.number_questions,
+									0,
+									undefined,
+									JSON.stringify(answerData)
+								);
 							} else {
 								const { correctAnswer, emptyAnswer, wrongAnswer } = countResult(
 									answerData,
-									stateParsed.number_questions
+									dataState.number_questions
 								);
-								PostAnswer(correctAnswer, emptyAnswer, wrongAnswer, undefined);
+								PostAnswer(
+									correctAnswer,
+									emptyAnswer,
+									wrongAnswer,
+									undefined,
+									JSON.stringify(answerData)
+								);
 							}
 						}
 						setTime(seconds);
@@ -113,8 +131,14 @@ function Quiz() {
 			};
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [time, resData, timeLocal]);
-
+	}, [time, resData]);
+	useEffect(() => {
+		if (!isQuizDone) {
+			saveIsResumable(true);
+		} else {
+			saveIsResumable(false);
+		}
+	}, [isQuizDone, saveIsResumable]);
 	// shuffle raw questions choice from API
 	function mapShuffleQuestions(
 		arrayRes: ArrayRawDataResponseType
@@ -139,8 +163,7 @@ function Quiz() {
 	}
 
 	// set current index question of array
-	function setIndexQuestionPosition(answered: string | null): number {
-		if (!answered || !resData) return 0;
+	function setIndexQuestionPosition(answered: string): number {
 		const parsedData = JSON.parse(answered) as AnsweredDataType[];
 		return parsedData.length;
 	}
@@ -150,13 +173,15 @@ function Quiz() {
 		score: number,
 		not_answered: number,
 		wrong_answer: number,
-		sto: number | undefined | NodeJS.Timeout
+		sto: number | undefined | NodeJS.Timeout,
+		dataQuestionsReview: string
 	) {
 		axiosServerAuthConfig
 			.post("/user/score", {
 				score,
 				not_answered,
 				wrong_answer,
+				data_question_review: dataQuestionsReview,
 			})
 			.then(() => {
 				clearTimeout(sto);
@@ -179,16 +204,22 @@ function Quiz() {
 	}
 
 	function insertScoreIntoDB() {
-		if (answerData) {
+		if (answerData && dataState) {
 			setIsQuizDone(true);
 			const { correctAnswer, emptyAnswer, wrongAnswer } = countResult(
 				answerData,
-				stateParsed.number_questions
+				dataState.number_questions
 			) as ResultSetType;
 			const sto = setTimeout(() => {
 				router.push("/questions-form");
 			}, 5000);
-			PostAnswer(correctAnswer, emptyAnswer, wrongAnswer, sto);
+			PostAnswer(
+				correctAnswer,
+				emptyAnswer,
+				wrongAnswer,
+				sto,
+				JSON.stringify(answerData)
+			);
 		}
 	}
 
@@ -216,12 +247,14 @@ function Quiz() {
 			emptyAnswer: number_questions - answerData.length,
 		} as ResultSetType;
 	}
-
 	return (
 		<>
-			{resData !== null && stateParsed !== null ? (
+			{resData !== null &&
+			dataState !== null &&
+			indexQuestions !== null &&
+			time !== null ? (
 				<Question
-					number_questions={stateParsed.number_questions}
+					number_questions={dataState.number_questions}
 					question_part={resData[indexQuestions]}
 					digitalTime={digitalTime(time)}
 					stateFunc={{
@@ -232,7 +265,11 @@ function Quiz() {
 						answerData,
 					}}
 				/>
-			) : null}
+			) : (
+				<p className="text-xl md:text-xl lg:text-2xl font-semibold text-center  m-auto">
+					Preparing your quiz ...
+				</p>
+			)}
 		</>
 	);
 }

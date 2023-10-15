@@ -5,7 +5,7 @@ import { Card, Typography } from "@material-tailwind/react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Loading from "../loading";
-
+import Link from "next/link";
 type ScoreBoard = {
 	id: string;
 	createdAt: string;
@@ -47,14 +47,18 @@ const Scoreboard = () => {
 		return formattedDate;
 	}
 	return (
-		<div className="flex flex-col pt-12 mx-auto max-w-3xl">
+		<div
+			className={`flex flex-col pt-8 sm:pt-10 lg:pt-12 ${
+				data ? "mx-auto" : "m-auto"
+			} max-w-3xl`}
+		>
 			<h3 className="text-center text-2xl font-semibold mb-6">
-				Your Scoreboard
+				{data ? "Your Scoreboard" : "Loading Your Scoreboard ..."}
 			</h3>
 			{!data ? (
 				<Loading />
 			) : (
-				<Card className="h-full w-full overflow-y-scroll">
+				<Card className="h-full w-full overflow-y-scroll max-w-3xl">
 					<table className="w-full min-w-max table-auto text-left">
 						<thead>
 							<tr>
@@ -118,20 +122,18 @@ const Scoreboard = () => {
 												<Typography
 													variant="small"
 													color="blue-gray"
-													className="font-normal text-center"
+													className="font-normal text-center w-[5rem] md:w-[10rem] lg:w-max"
 												>
 													{dateConvert(createdAt)}
 												</Typography>
 											</td>
 											<td className={classes}>
 												<Typography
-													as="a"
-													href="#"
 													variant="small"
 													color="blue-gray"
 													className="font-medium text-center text-blue-700 hover:underline underline-offset-2"
 												>
-													Review
+													<Link href={`/scoreboard/review/${id}`}>Review</Link>
 												</Typography>
 											</td>
 										</tr>

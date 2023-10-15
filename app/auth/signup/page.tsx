@@ -28,10 +28,7 @@ function Signup() {
 					router.push("/auth/login");
 				})
 				.catch((err) => {
-					console.log(err?.message);
-					if (err.response.status == 400) {
-						setIsPassEqual(false);
-					}
+					toast("Username or Email already registered", { type: "warning" });
 				});
 		} else {
 			setIsPassValid(false);
@@ -43,7 +40,7 @@ function Signup() {
 			animate={{ y: 0, opacity: 1 }}
 			transition={{ delay: 0.1, duration: 0.3, ease: "easeInOut" }}
 			onSubmit={handleSubmit}
-			className="bg-white shadow-lg rounded-lg mx-auto px-5 py-7 max-w-lg w-full flex flex-col gap-y-2"
+			className="bg-white shadow-lg m-auto rounded-lg mx-auto px-5 py-7 max-w-lg w-full flex flex-col gap-y-2"
 		>
 			<h4 className="font-semibold text-2xl text-center">SIGNUP</h4>
 			<div className="form-input-wrapper">
