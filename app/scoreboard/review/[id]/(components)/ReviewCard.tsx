@@ -11,33 +11,21 @@ const ReviewCard: React.FC<ReviewCardType> = ({
 	answered,
 }) => {
 	return (
-		<div className="w-full">
-			{correctAnswer === answered ? (
-				<p className="bg-green-600 px-2 py-1 text-white text-center rounded-md">
-					Correct
-				</p>
-			) : (
-				<p className="bg-red-600 px-2 py-1 text-white text-center rounded-md">
-					Wrong
-				</p>
-			)}
-
-			<div className="my-3">
-				<p className="font-semibold">Question : </p>
-				<p>{sanitizeHtml(question)}</p>
-			</div>
-			<div className="mt-2 flex justify-between flex-wrap">
+		<div className="block rounded-lg bg-white p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700">
+			<p className="mb-2 text-lg md:text-xl font-semibold leading-tight text-neutral-800 dark:text-neutral-50">
+				Question
+			</p>
+			<p className="mb-4 text-base text-neutral-600 dark:text-neutral-200">
+				{sanitizeHtml(question)}
+			</p>
+			<div className="flex justify-between flex-wrap">
 				<div>
-					<p className="bg-blue-600 w-fit text-white px-2 py-1 rounded-md">
-						Your answer :{" "}
-					</p>
-					<p className="font-semibold mt-1">{sanitizeHtml(answered)}</p>
+					<p className="bg-green-700 px-2 py-1 rounded-md text-white">Correct Answer</p>
+					<p>{sanitizeHtml(correctAnswer)}</p>
 				</div>
 				<div>
-					<p className="bg-green-600 w-fit text-white px-2 py-1 rounded-md">
-						Correct Answer :{" "}
-					</p>
-					<p className="font-semibold mt-1">{sanitizeHtml(correctAnswer)}</p>
+					<p className="bg-blue-700 px-2 py-1 rounded-md text-white">Your Answer</p>
+					<p>{sanitizeHtml(answered)}</p>
 				</div>
 			</div>
 		</div>

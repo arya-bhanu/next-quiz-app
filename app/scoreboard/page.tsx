@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { axiosServerAuthConfig } from "../../config/axios.config";
-import { Card, Typography } from "@material-tailwind/react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Loading from "../loading";
@@ -24,8 +23,6 @@ const Scoreboard = () => {
 				setData(response.data.data as ScoreBoard[]);
 			})
 			.catch((err: unknown) => {
-				console.error(err);
-				console.log("rendered");
 				toast("You're not authenticated", { type: "warning" });
 				router.push("/auth/login");
 			});
@@ -48,7 +45,7 @@ const Scoreboard = () => {
 	}
 	return (
 		<div
-			className={`flex flex-col pt-8 sm:pt-10 lg:pt-12 ${
+			className={`flex flex-col pt-8 sm:pt-10 w-full lg:pt-12  ${
 				data ? "mx-auto" : "m-auto"
 			} max-w-3xl`}
 		>
@@ -58,91 +55,68 @@ const Scoreboard = () => {
 			{!data ? (
 				<Loading />
 			) : (
-				<Card className="h-full w-full overflow-y-scroll max-w-3xl">
-					<table className="w-full min-w-max table-auto text-left">
-						<thead>
-							<tr>
-								{TABLE_HEAD.map((head) => (
-									<th
-										key={head}
-										className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
-									>
-										<Typography
-											variant="small"
-											color="blue-gray"
-											className="font-normal leading-none opacity-70 text-center"
-										>
-											{head}
-										</Typography>
-									</th>
-								))}
+				<div className="overflow-x-auto shadow-lg rounded-lg w-full max-h-[60vh] overflow-y-auto">
+					<table className="min-w-full text-left text-sm font-light">
+						<thead className="border-b sticky top-0 font-medium bg-neutral-300 dark:border-neutral-500">
+							<tr className="sticky top-0">
+								<th
+									scope="col"
+									className="px-6 py-4 sticky top-0 text-center"
+								>
+									Score
+								</th>
+								<th
+									scope="col"
+									className="px-6 py-4 sticky top-0 text-center"
+								>
+									Not Answered
+								</th>
+								<th
+									scope="col"
+									className="px-6 py-4 sticky top-0 text-center"
+								>
+									Wrong Answer
+								</th>
+								<th
+									scope="col"
+									className="px-6 py-4 sticky top-0 text-center"
+								>
+									Date
+								</th>
+								<th
+									scope="col"
+									className="px-6 py-4 sticky top-0 text-center"
+								></th>
 							</tr>
 						</thead>
 						<tbody>
-							{data.map(
-								(
-									{ createdAt, not_answered, score, wrong_answer, id },
-									index
-								) => {
-									const isLast = index === data.length - 1;
-									const classes = isLast
-										? "p-4"
-										: "p-4 border-b border-blue-gray-50";
-
-									return (
-										<tr key={id}>
-											<td className={classes}>
-												<Typography
-													variant="small"
-													color="blue-gray"
-													className="font-normal text-center"
-												>
-													{score}
-												</Typography>
-											</td>
-											<td className={classes}>
-												<Typography
-													variant="small"
-													color="blue-gray"
-													className="font-normal text-center"
-												>
-													{not_answered}
-												</Typography>
-											</td>
-											<td className={classes}>
-												<Typography
-													variant="small"
-													color="blue-gray"
-													className="font-normal text-center"
-												>
-													{wrong_answer}
-												</Typography>
-											</td>
-											<td className={classes}>
-												<Typography
-													variant="small"
-													color="blue-gray"
-													className="font-normal text-center w-[5rem] md:w-[10rem] lg:w-max"
-												>
-													{dateConvert(createdAt)}
-												</Typography>
-											</td>
-											<td className={classes}>
-												<Typography
-													variant="small"
-													color="blue-gray"
-													className="font-medium text-center text-blue-700 hover:underline underline-offset-2"
-												>
-													<Link href={`/scoreboard/review/${id}`}>Review</Link>
-												</Typography>
-											</td>
-										</tr>
-									);
-								}
-							)}
+							{data.map((el) => {
+								return (
+									<tr
+										key={el.id}
+										className="border-b transition duration-300 ease-in-out hover:bg-neutral-200 dark:border-neutral-500 dark:hover:bg-neutral-600"
+									>
+										<td className="whitespace-nowrap px-6 py-4 font-medium  text-center">
+											{el.score}
+										</td>
+										<td className="whitespace-nowrap px-6 py-4 text-center">
+											{el.not_answered}
+										</td>
+										<td className="whitespace-nowrap px-6 py-4 text-center">
+											{el.wrong_answer}
+										</td>
+										<td className="whitespace-nowrap px-6 py-4 text-center">
+											{dateConvert(el.createdAt)}
+										</td>
+										<td className="whitespace-nowrap px-6 py-4 text-center">
+											<Link href={`/scoreboard/review/${el.id}`} className="hover:underline underline-offset-2 text-blue-600">Review</Link>
+										</td>
+									</tr>
+								);
+							})}
 						</tbody>
 					</table>
-				</Card>
+				</div>
 			)}
 		</div>
 	);

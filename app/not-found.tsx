@@ -3,7 +3,7 @@ import Image from "next/image";
 import pic404 from "../public/img/404.png";
 export default function NotFound() {
 	return (
-		<div>
+		<div className="min-h-[91vh] sm:min-h-[90vh] flex items-center">
 			<div className="w-fit mx-auto flex flex-col gap-y-4 bg-white px-10 py-8 rounded-lg shadow-lg">
 				<h2 className="text-center text-xl sm:text-2xl lg:text-4xl font-semibold">404 Not Found</h2>
 				<Image
