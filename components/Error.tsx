@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 export default function Error({
 	error,
 	reset,
@@ -10,19 +9,21 @@ export default function Error({
 	return (
 		<html>
 			<body className="min-h-screen flex items-center justify-center flex-col">
-				<h2>Something went wrong!</h2>
-				<button
-					onClick={() => reset()}
-					className="bg-blue-700 px-3 py-1 mt-2"
-				>
-					Try again
-				</button>
-				<Link
-					href={"/"}
-					className="bg-green-800 text-white px-3 py-1 mt-2 rounded-md"
-				>
-					Home
-				</Link>
+				<div className="px-5 py-7 bg-white shadow-xl flex flex-col items-center">
+					<h2 className="font-semibold text-2xl">Something went wrong!</h2>
+					<button
+						onClick={() => reset()}
+						className="bg-blue-800 px-3 py-1 mt-2 text-white"
+					>
+						Try again
+					</button>
+					<a
+						href={"/"}
+						className="bg-green-800 text-white px-3 py-1 mt-2 rounded-md"
+					>
+						Home
+					</a>
+				</div>
 			</body>
 		</html>
 	);
