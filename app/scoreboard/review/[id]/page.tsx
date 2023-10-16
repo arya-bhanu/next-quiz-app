@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { axiosServerAuthConfig } from "@/config/axios.config";
-import { List, ListItem, Card } from "@material-tailwind/react";
 import ReviewCard from "./(components)/ReviewCard";
 
 type ResponseReviewDataType = {
@@ -32,34 +31,27 @@ const ReviewPage = ({ params }: { params: { id: string } }) => {
 	return (
 		<div className="pt-8 min-h-[91vh] sm:min-h-[90vh] flex flex-col">
 			{data ? (
-				<div className="flex flex-col items-center h-full">
+				<div className="flex flex-col items-center h-full max-w-2xl mx-auto">
 					<h2 className="font-semibold text-lg sm:text-xl md:text-2xl text-center">
 						Review Page
 					</h2>
-
-					<div className="max-h-[70vh] mt-5 flex flex-col gap-y-2 px-2 overflow-y-auto">
+					<div className="max-h-[70vh] flex flex-col gap-y-5 overflow-auto mt-4 px-2">
 						{data.data_question_review.map((el, index) => {
 							return (
-								<Card
+								<ReviewCard
 									key={index}
-									className="max-w-xl w-full px-6 py-9 rounded-lg"
-								>
-									<List>
-										<ListItem className="cursor-default">
-											<ReviewCard
-												answered={el.answered}
-												correctAnswer={el.correct}
-												question={el.question}
-											/>
-										</ListItem>
-									</List>
-								</Card>
+									answered={el.answered}
+									correctAnswer={el.correct}
+									question={el.question}
+								/>
 							);
 						})}
 					</div>
 				</div>
 			) : (
-				<p className="text-center text-xl md:text-xl lg:text-2xl font-semibold m-auto">Loading review page ...</p>
+				<p className="text-center text-xl md:text-xl lg:text-2xl font-semibold m-auto">
+					Loading review page ...
+				</p>
 			)}
 		</div>
 	);
