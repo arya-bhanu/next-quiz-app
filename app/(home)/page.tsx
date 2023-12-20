@@ -5,8 +5,10 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import studyImg from "../../public/img/study.png";
 function Home() {
+	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 	const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL;
-	console.log(serverUrl)
+	console.log(serverUrl);
+	console.log(apiUrl)
 	return (
 		<div className="flex min-h-[91vh] sm:min-h-[90vh] items-center justify-between relative overflow-y-clip gap-x-5">
 			<motion.div
