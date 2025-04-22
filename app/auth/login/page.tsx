@@ -1,19 +1,20 @@
 "use client";
 import Link from "next/link";
 import { axiosServerAuthConfig } from "@/config/axios.config";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
+import { FaEye } from "react-icons/fa";
+import { useState } from "react";
 function Login() {
-  const router = useRouter();
+  const [showPass, setShowPass] = useState(false);
   function handleSubmit(event: any) {
     event.preventDefault();
-    const email = event.target.elements.email.value;
+    const email_username = event.target.elements.email_username.value;
     const password = event.target.elements.password.value;
     axiosServerAuthConfig
       .post(
         "/user/auth/login",
-        { email, password },
+        { email_username, password },
         { headers: { "Content-Type": "application/json" } }
       )
       .then(() => {
@@ -36,12 +37,28 @@ function Login() {
     >
       <h4 className="font-semibold text-2xl text-center">LOGIN</h4>
       <div className="form-input-wrapper">
-        <label htmlFor="time">Email</label>
-        <input type="email" name="email" id="email" required />
+        <label htmlFor="time">Email / Username</label>
+        <input type="text" name="email_username" id="email_username" required />
       </div>
-      <div className="form-input-wrapper">
+
+      <div className="form-input-wrapper flex-1">
         <label htmlFor="number_questions">Password</label>
-        <input type="password" name="password" id="password" required />
+        <div className="flex gap-2">
+          <input
+            type={showPass ? "text" : "password"}
+            name="password"
+            id="password"
+            className="flex-1"
+            required
+          />
+          <button
+            type="button"
+            onClick={() => setShowPass(!showPass)}
+            className="bg-gray-200 px-3 rounded-lg"
+          >
+            <FaEye />
+          </button>
+        </div>
       </div>
 
       <div className="flex items-center gap-x-3">

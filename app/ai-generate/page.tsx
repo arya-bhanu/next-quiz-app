@@ -1,9 +1,26 @@
 "use client";
+import { axiosServerAuthConfig } from "@/config/axios.config";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import Loading from "../loading";
 
 const AiGenerate = () => {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    axiosServerAuthConfig
+      .get("/user/auth")
+      .then(() => {
+        setIsLoading(false);
+      })
+      .catch(() => {
+        router.replace("/auth/login");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     window.localStorage.clear();
@@ -26,55 +43,63 @@ const AiGenerate = () => {
     });
   };
   return (
-    <div className="py-10 flex justify-center">
-      <form
-        onSubmit={handleFormSubmit}
-        className="w-full max-w-3xl flex flex-col items-center gap-5"
-      >
-        <fieldset className="fieldset shadow-md w-full">
-          <legend className="fieldset-legend">Enter your topic prompt</legend>
-          <input
-            id="topic"
-            name="topic"
-            type="text"
-            className="input w-full"
-            placeholder="Type here"
-            required
-          />
-        </fieldset>
-        <fieldset className="fieldset shadow-md w-full">
-          <legend className="fieldset-legend">Set your time limit</legend>
-          <input
-            type="number"
-            name="time"
-            id="time"
-            className="input w-full"
-            placeholder="Enter your time limit (minutes)"
-            required
-            defaultValue={10}
-            min={1}
-            max={20}
-          />
-        </fieldset>
-        <fieldset className="fieldset shadow-md w-full">
-          <legend className="fieldset-legend">
-            Set your number of questions
-          </legend>
-          <input
-            type="number"
-            className="input w-full"
-            name="number_questions"
-            id="number_questions"
-            placeholder="Enter your number of questions"
-            required
-            defaultValue={10}
-            min={5}
-            max={20}
-          />
-        </fieldset>
-        <button className="btn btn-primary">Let&apos;s Practice</button>
-      </form>
-    </div>
+    <>
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <div className="py-10 flex justify-center">
+          <form
+            onSubmit={handleFormSubmit}
+            className="w-full max-w-3xl flex flex-col items-center gap-5"
+          >
+            <fieldset className="fieldset shadow-md w-full">
+              <legend className="fieldset-legend">
+                Enter your topic prompt
+              </legend>
+              <input
+                id="topic"
+                name="topic"
+                type="text"
+                className="input w-full"
+                placeholder="Type here"
+                required
+              />
+            </fieldset>
+            <fieldset className="fieldset shadow-md w-full">
+              <legend className="fieldset-legend">Set your time limit</legend>
+              <input
+                type="number"
+                name="time"
+                id="time"
+                className="input w-full"
+                placeholder="Enter your time limit (minutes)"
+                required
+                defaultValue={10}
+                min={1}
+                max={20}
+              />
+            </fieldset>
+            <fieldset className="fieldset shadow-md w-full">
+              <legend className="fieldset-legend">
+                Set your number of questions
+              </legend>
+              <input
+                type="number"
+                className="input w-full"
+                name="number_questions"
+                id="number_questions"
+                placeholder="Enter your number of questions"
+                required
+                defaultValue={10}
+                min={5}
+                max={20}
+              />
+            </fieldset>
+            <button className="btn btn-primary">Let&apos;s Practice</button>
+          </form>
+        </div>
+      )}
+    </>
   );
 };
 
